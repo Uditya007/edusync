@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- 1. BUS VIEWS -->
+    <record id="view_op_transport_bus_tree" model="ir.ui.view">
+        <field name="name">op.transport.bus.tree</field>
+        <field name="model">op.transport.bus</field>
+        <field name="arch" type="xml">
+            <list string="School Buses &amp; Live Tracking">
+                <field name="name"/>
+                <field name="vehicle_number"/>
+                <field name="route_id"/>
+                <field name="driver_name"/>
+                <field name="driver_phone"/>
+                <field name="current_location"/>
+                <field name="status" widget="badge" decoration-success="status == 'on_route'" decoration-warning="status == 'idle'" decoration-danger="status == 'maintenance'"/>
+                <field name="last_updated"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_op_transport_bus_kanban" model="ir.ui.view">
+        <field name="name">op.transport.bus.kanban</field>
+        <field name="model">op.transport.bus</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="vehicle_number"/>
+                <field name="route_id"/>
+                <field name="driver_name"/>
+                <field name="driver_phone"/>
+                <field name="status"/>
+                <field name="current_location"/>
+                <field name="last_updated"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click p-3 rounded shadow-sm bg-white border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="mb-0 fw-bold text-primary">
+                                    <i class="fa fa-bus me-1"/> <t t-esc="record.name.value"/>
+                                </h4>
+                                <span t-if="record.status.raw_value == 'on_route'" class="badge bg-success">On Route</span>
+                                <span t-if="record.status.raw_value == 'idle'" class="badge bg-secondary">At Campus</span>
+                                <span t-if="record.status.raw_value == 'maintenance'" class="badge bg-danger">Maintenance</span>
+                            </div>
+                            <div class="text-muted small mb-2">
+                                <strong>Reg No:</strong> <t t-esc="record.vehicle_number.value"/> | 
+                                <strong>Route:</strong> <t t-esc="record.route_id.value or 'Unassigned'"/>
+                            </div>
+                            <div class="p-2 rounded bg-light border mb-2 small">
+                                <div class="text-dark">
+                                    <i class="fa fa-map-marker text-danger me-1"/> 
+                                    <strong>Live Location:</strong> <t t-esc="record.current_location.value or 'Not available'"/>
+                                </div>
+                                <div class="text-muted" style="font-size: 0.85em;">
+                                    Updated: <t t-esc="record.last_updated.value"/>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center small">
+                                <span><i class="fa fa-user me-1 text-muted"/> <t t-esc="record.driver_name.value"/> (<t t-esc="record.driver_phone.value"/>)</span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_op_transport_bus_form" model="ir.ui.view">
+        <field name="name">op.transport.bus.form</field>
+        <field name="model">op.transport.bus</field>
+        <field name="arch" type="xml">
+            <form string="School Bus">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. School Bus #01 (North Express)"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Vehicle &amp; Route Info">
+                            <field name="vehicle_number" placeholder="e.g. MH-02-SB-1001"/>
+                            <field name="route_id"/>
+                            <field name="capacity"/>
+                            <field name="student_count"/>
+                        </group>
+                        <group string="Driver &amp; Crew Details">
+                            <field name="driver_name"/>
+                            <field name="driver_phone"/>
+                            <field name="conductor_name"/>
+                            <field name="conductor_phone"/>
+                        </group>
+                    </group>
+                    <group string="Live GPS &amp; Location Tracking">
+                        <group>
+                            <field name="status"/>
+                            <field name="current_location" placeholder="e.g. Passing Sector 4, 1.5 km to school"/>
+                            <field name="last_updated"/>
+                        </group>
+                        <group>
+                            <field name="live_gps_url" placeholder="https://maps.google.com/..."/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 2. ROUTE & STOP VIEWS -->
+    <record id="view_op_transport_route_tree" model="ir.ui.view">
+        <field name="name">op.transport.route.tree</field>
+        <field name="model">op.transport.route</field>
+        <field name="arch" type="xml">
+            <list string="Transport Routes">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="start_point"/>
+                <field name="end_point"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_op_transport_route_form" model="ir.ui.view">
+        <field name="name">op.transport.route.form</field>
+        <field name="model">op.transport.route</field>
+        <field name="arch" type="xml">
+            <form string="Transport Route">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. North Suburb Route"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="start_point"/>
+                            <field name="end_point"/>
+                        </group>
+                        <group>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Pickup &amp; Drop Stops">
+                            <field name="stop_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="pickup_time"/>
+                                    <field name="drop_time"/>
+                                    <field name="monthly_fare"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Assigned Buses">
+                            <field name="bus_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="vehicle_number"/>
+                                    <field name="driver_name"/>
+                                    <field name="status"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 3. STUDENT BUS REGISTRATION VIEWS -->
+    <record id="view_op_transport_registration_tree" model="ir.ui.view">
+        <field name="name">op.transport.registration.tree</field>
+        <field name="model">op.transport.registration</field>
+        <field name="arch" type="xml">
+            <list string="Student Bus Passes">
+                <field name="card_number"/>
+                <field name="student_id"/>
+                <field name="route_id"/>
+                <field name="stop_id"/>
+                <field name="bus_id"/>
+                <field name="status" widget="badge" decoration-success="status == 'active'" decoration-danger="status == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_op_transport_registration_form" model="ir.ui.view">
+        <field name="name">op.transport.registration.form</field>
+        <field name="model">op.transport.registration</field>
+        <field name="arch" type="xml">
+            <form string="Student Bus Pass">
+                <sheet>
+                    <group>
+                        <group string="Student &amp; Pass Info">
+                            <field name="card_number" placeholder="e.g. BUS-2026-001"/>
+                            <field name="student_id"/>
+                            <field name="status"/>
+                        </group>
+                        <group string="Bus &amp; Route Assignment">
+                            <field name="route_id"/>
+                            <field name="stop_id" domain="[('route_id', '=', route_id)]"/>
+                            <field name="bus_id" domain="[('route_id', '=', route_id)]"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Validity">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 4. ACTIONS -->
+    <record id="act_open_op_transport_bus_tracking" model="ir.actions.act_window">
+        <field name="name">Live Bus Tracking</field>
+        <field name="res_model">op.transport.bus</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Monitor live school bus location, status, and driver contacts.
+            </p>
+        </field>
+    </record>
+
+    <record id="act_open_op_transport_bus" model="ir.actions.act_window">
+        <field name="name">School Buses</field>
+        <field name="res_model">op.transport.bus</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <record id="act_open_op_transport_route" model="ir.actions.act_window">
+        <field name="name">Routes &amp; Stops</field>
+        <field name="res_model">op.transport.route</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="act_open_op_transport_registration" model="ir.actions.act_window">
+        <field name="name">Student Bus Passes</field>
+        <field name="res_model">op.transport.registration</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- 5. MENUS -->
+    <!-- Top-level root menu -->
+    <menuitem id="menu_op_transport_root"
+              name="Bus Tracking"
+              sequence="45"
+              web_icon="openeducat_core,static/description/transportation-icon.svg"/>
+
+    <!-- Submenus -->
+    <menuitem id="menu_op_transport_tracking"
+              name="Live Bus Tracking"
+              parent="menu_op_transport_root"
+              sequence="10"
+              action="act_open_op_transport_bus_tracking"/>
+
+    <menuitem id="menu_op_transport_bus"
+              name="School Buses"
+              parent="menu_op_transport_root"
+              sequence="20"
+              action="act_open_op_transport_bus"/>
+
+    <menuitem id="menu_op_transport_routes"
+              name="Routes &amp; Stops"
+              parent="menu_op_transport_root"
+              sequence="30"
+              action="act_open_op_transport_route"/>
+
+    <menuitem id="menu_op_transport_registration"
+              name="Student Bus Allocations"
+              parent="menu_op_transport_root"
+              sequence="40"
+              action="act_open_op_transport_registration"/>
+
+</odoo>

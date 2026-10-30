@@ -1,0 +1,11 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Laptop screen -->
+  <rect x="12" y="14" width="40" height="28" rx="4" fill="#C1DBF6"/>
+  <rect x="12" y="14" width="40" height="28" rx="4" stroke="#374874" stroke-width="2.5"/>
+  <!-- Laptop base -->
+  <path d="M6 46 C6 44 8 42 10 42 L54 42 C56 42 58 44 58 46 L58 48 C58 49 57 50 56 50 L8 50 C7 50 6 49 6 48 Z" fill="#FBDBD0" stroke="#374874" stroke-width="2"/>
+  <!-- Play button / book on screen -->
+  <polygon points="28,22 28,34 39,28" fill="#6366F1" stroke="#374874" stroke-width="1.8" stroke-linejoin="round"/>
+  <!-- Graduation cap accent on top corner -->
+  <polygon points="46,7 55,11 46,15 37,11" fill="#FBBF24" stroke="#374874" stroke-width="1.5"/>
+</svg>

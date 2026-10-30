@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 1. INJECT CARDS ON /my/home -->
+    <template id="portal_my_home_edusync" name="EduSync Portal Home Entries" inherit_id="portal.portal_my_home" priority="35">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_client_category_enable" t-value="True"/>
+            <style>
+                .o_portal_icon {
+                    width: 48px !important;
+                    min-width: 48px !important;
+                    max-width: 48px !important;
+                    height: 48px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    flex-shrink: 0 !important;
+                }
+                .o_portal_icon img,
+                .o_portal_icon svg {
+                    width: 44px !important;
+                    height: 44px !important;
+                    max-width: 44px !important;
+                    max-height: 44px !important;
+                    object-fit: contain !important;
+                }
+            </style>
+        </xpath>
+        <div id="portal_client_category" position="inside">
+            <!-- Timetable Card -->
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/openeducat_core/static/src/img/portal-timetable.svg'"/>
+                <t t-set="title">My Timetable</t>
+                <t t-set="url" t-value="'/my/timetable'"/>
+                <t t-set="text">View daily schedule, period timings and faculty</t>
+                <t t-set="placeholder_count" t-value="'timetable_count'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+
+            <!-- Assignments Card -->
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/openeducat_core/static/src/img/portal-assignments.svg'"/>
+                <t t-set="title">Homework &amp; Assignments</t>
+                <t t-set="url" t-value="'/my/assignments'"/>
+                <t t-set="text">View assigned homework and submission deadlines</t>
+                <t t-set="placeholder_count" t-value="'assignment_count'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+
+            <!-- Exams Card -->
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/openeducat_core/static/src/img/portal-exams.svg'"/>
+                <t t-set="title">Exams &amp; Results</t>
+                <t t-set="url" t-value="'/my/exams'"/>
+                <t t-set="text">Check upcoming exam schedules and mark sheets</t>
+                <t t-set="placeholder_count" t-value="'exam_count'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+
+            <!-- Attendance Card -->
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/openeducat_core/static/src/img/portal-attendance.svg'"/>
+                <t t-set="title">Attendance Records</t>
+                <t t-set="url" t-value="'/my/attendance'"/>
+                <t t-set="text">Review your attendance sessions and presence logs</t>
+                <t t-set="placeholder_count" t-value="'attendance_count'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+
+            <!-- Online Learning & Courses Card -->
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/openeducat_core/static/src/img/portal-elearning.svg'"/>
+                <t t-set="title">Study Materials &amp; Courses</t>
+                <t t-set="url" t-value="'/slides'"/>
+                <t t-set="text">Access video lessons, digital notes and online quizzes</t>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+
+            <!-- Bus Tracking Card -->
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/openeducat_core/static/description/transportation-icon.svg'"/>
+                <t t-set="title">Bus Tracking</t>
+                <t t-set="url" t-value="'/my/transport'"/>
+                <t t-set="text">Track your school bus, pickup stops and live location</t>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </div>
+    </template>
+
+    <!-- 2. BREADCRUMBS -->
+    <template id="portal_breadcrumbs_edusync" name="EduSync Portal Breadcrumbs" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'timetable'" class="breadcrumb-item active">My Timetable</li>
+            <li t-if="page_name == 'assignments'" class="breadcrumb-item active">Homework &amp; Assignments</li>
+            <li t-if="page_name == 'exams'" class="breadcrumb-item active">Exams &amp; Results</li>
+            <li t-if="page_name == 'attendance'" class="breadcrumb-item active">Attendance Records</li>
+            <li t-if="page_name == 'transport'" class="breadcrumb-item active">Bus Tracking &amp; Transport</li>
+        </xpath>
+    </template>
+
+    <!-- 3. PAGE: TIMETABLE -->
+    <template id="portal_my_timetable" name="My Timetable">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="card p-4 shadow-sm border rounded-3 mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0 text-primary">📅 Class Timetable</h3>
+                    <span class="badge bg-primary fs-6" t-if="student">Student: <t t-esc="student.name"/></span>
+                </div>
+                <p class="text-muted">Below are your scheduled class sessions, timings, and assigned faculty.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Session / Subject</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Faculty</th>
+                                <th>Batch / Classroom</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="sessions" t-as="s">
+                                <td>
+                                    <strong><t t-esc="s.subject_id.name or s.name"/></strong>
+                                </td>
+                                <td><t t-esc="s.start_datetime" t-options="{'widget': 'datetime'}"/></td>
+                                <td><t t-esc="s.end_datetime" t-options="{'widget': 'datetime'}"/></td>
+                                <td><t t-esc="s.faculty_id.name or 'Staff'"/></td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        <t t-esc="s.batch_id.name or s.classroom_id.name or 'Main Hall'"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success" t-if="s.state == 'done'">Completed</span>
+                                    <span class="badge bg-info text-dark" t-elif="s.state == 'confirm'">Confirmed</span>
+                                    <span class="badge bg-secondary" t-else="">Scheduled</span>
+                                </td>
+                            </tr>
+                            <tr t-if="not sessions">
+                                <td colspan="6" class="text-center text-muted py-4">No scheduled sessions found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 4. PAGE: ASSIGNMENTS -->
+    <template id="portal_my_assignments" name="Homework &amp; Assignments">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="card p-4 shadow-sm border rounded-3 mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0 text-primary">📝 Homework &amp; Assignments</h3>
+                    <span class="badge bg-primary fs-6" t-if="student">Student: <t t-esc="student.name"/></span>
+                </div>
+                <p class="text-muted">Review active assignments, submission deadlines, and evaluation feedback.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Assignment Title</th>
+                                <th>Course</th>
+                                <th>Batch</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="assignments" t-as="a">
+                                <td>
+                                    <strong><t t-esc="a.name"/></strong>
+                                    <div class="text-muted small" t-if="a.description">
+                                        <t t-raw="a.description[:100]"/>...
+                                    </div>
+                                </td>
+                                <td><t t-esc="a.course_id.name"/></td>
+                                <td><t t-esc="a.batch_id.name or 'All'"/></td>
+                                <td>
+                                    <span class="text-danger fw-bold">
+                                        <t t-esc="a.submission_date" t-options="{'widget': 'datetime'}"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <t t-set="sub" t-value="submissions.get(a.id)"/>
+                                    <span class="badge bg-success" t-if="sub and sub.state == 'accept'">Accepted</span>
+                                    <span class="badge bg-info text-dark" t-elif="sub and sub.state == 'submit'">Submitted</span>
+                                    <span class="badge bg-warning text-dark" t-else="">Pending Submission</span>
+                                </td>
+                            </tr>
+                            <tr t-if="not assignments">
+                                <td colspan="5" class="text-center text-muted py-4">No active assignments found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 5. PAGE: EXAMS & RESULTS -->
+    <template id="portal_my_exams" name="Exams &amp; Results">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="card p-4 shadow-sm border rounded-3 mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0 text-primary">📊 Exams &amp; Results</h3>
+                    <span class="badge bg-primary fs-6" t-if="student">Student: <t t-esc="student.name"/></span>
+                </div>
+                <p class="text-muted">Check exam timetables, evaluation scores, and published grades.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Exam Name</th>
+                                <th>Subject / Session</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status / Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="exams" t-as="e">
+                                <td>
+                                    <strong><t t-esc="e.name"/></strong>
+                                </td>
+                                <td><t t-esc="e.session_id.name or 'General Exam'"/></td>
+                                <td><t t-esc="e.start_time" t-options="{'widget': 'datetime'}"/></td>
+                                <td><t t-esc="e.end_time" t-options="{'widget': 'datetime'}"/></td>
+                                <td>
+                                    <span class="badge bg-success" t-if="e.state == 'done'">Published</span>
+                                    <span class="badge bg-info text-dark" t-elif="e.state == 'held'">Held</span>
+                                    <span class="badge bg-secondary" t-else="">Scheduled</span>
+                                </td>
+                            </tr>
+                            <tr t-if="not exams">
+                                <td colspan="5" class="text-center text-muted py-4">No exams scheduled at this time.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 6. PAGE: ATTENDANCE -->
+    <template id="portal_my_attendance" name="Attendance Records">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="card p-4 shadow-sm border rounded-3 mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0 text-primary">🕒 Attendance Records</h3>
+                    <span class="badge bg-primary fs-6" t-if="student">Student: <t t-esc="student.name"/></span>
+                </div>
+                <p class="text-muted">Review attendance logs recorded by faculty for each course and session.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Session / Subject</th>
+                                <th>Batch / Class</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="attendances" t-as="att">
+                                <td><t t-esc="att.attendance_date" t-options="{'widget': 'date'}"/></td>
+                                <td><t t-esc="att.course_id.name or 'Class Session'"/></td>
+                                <td><t t-esc="att.batch_id.name or '-'"/></td>
+                                <td>
+                                    <span class="badge bg-success" t-if="att.present">✓ Present</span>
+                                    <span class="badge bg-warning text-dark" t-elif="att.late">Late</span>
+                                    <span class="badge bg-info text-dark" t-elif="att.excused">Excused</span>
+                                    <span class="badge bg-danger" t-else="">✗ Absent</span>
+                                </td>
+                            </tr>
+                            <tr t-if="not attendances">
+                                <td colspan="4" class="text-center text-muted py-4">No attendance records logged yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- 7. PAGE: TRANSPORT & LIVE BUS TRACKING -->
+    <template id="portal_my_transport" name="School Bus Tracking">
+        <t t-call="portal.portal_layout">
+            <div class="container py-3">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1"><i class="fa fa-bus text-warning me-2"/>School Bus Tracking</h2>
+                        <p class="text-muted mb-0">Live route tracking, pickup stops and driver contact information</p>
+                    </div>
+                </div>
+
+                <!-- Case A: Student is registered for a bus -->
+                <div t-if="registration and bus" class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="card border shadow-sm h-100">
+                            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fw-bold text-dark">
+                                    <i class="fa fa-map-marker text-danger me-2"/>Live Bus Status
+                                </h5>
+                                <span t-if="bus.status == 'on_route'" class="badge bg-success fs-6 py-1 px-3">
+                                    <i class="fa fa-circle text-white me-1" style="font-size: 0.6em;"/> On Route / Moving
+                                </span>
+                                <span t-elif="bus.status == 'idle'" class="badge bg-secondary fs-6 py-1 px-3">At Campus / Parked</span>
+                                <span t-else="" class="badge bg-danger fs-6 py-1 px-3">Maintenance</span>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="p-3 mb-4 rounded bg-light border">
+                                    <div class="fw-bold fs-5 text-dark mb-1">
+                                        <i class="fa fa-crosshairs text-primary me-2"/>Current Location:
+                                    </div>
+                                    <div class="fs-6 text-dark fw-semibold ms-4">
+                                        <t t-esc="bus.current_location or 'Approaching designated stops'"/>
+                                    </div>
+                                    <div class="text-muted small mt-2 ms-4">
+                                        Last Updated: <t t-esc="bus.last_updated" t-options="{'widget': 'datetime'}"/>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <div class="p-3 border rounded bg-white">
+                                            <div class="text-muted small">Assigned School Bus</div>
+                                            <div class="fw-bold fs-6 text-dark"><t t-esc="bus.name"/></div>
+                                            <div class="badge bg-light text-dark border mt-1"><t t-esc="bus.vehicle_number"/></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="p-3 border rounded bg-white">
+                                            <div class="text-muted small">Transport Route</div>
+                                            <div class="fw-bold fs-6 text-dark"><t t-esc="registration.route_id.name"/></div>
+                                            <div class="text-muted small"><t t-esc="registration.route_id.code or ''"/></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="p-3 border rounded bg-white">
+                                            <div class="text-muted small">Your Pickup / Drop Stop</div>
+                                            <div class="fw-bold fs-6 text-primary"><i class="fa fa-map-pin me-1"/> <t t-esc="registration.stop_id.name"/></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="p-3 border rounded bg-white">
+                                            <div class="text-muted small">Scheduled Timings</div>
+                                            <div class="fw-bold fs-6 text-success"><i class="fa fa-sun-o me-1"/> Pickup: <t t-esc="registration.stop_id.pickup_time or '07:30 AM'"/></div>
+                                            <div class="text-muted small mt-1"><i class="fa fa-moon-o me-1"/> Drop: <t t-esc="registration.stop_id.drop_time or '03:30 PM'"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 text-center">
+                                    <a t-if="bus.live_gps_url" t-att-href="bus.live_gps_url" target="_blank" class="btn btn-primary px-4 py-2">
+                                        <i class="fa fa-external-link me-2"/>Open Live GPS Map Tracker
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card border shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 border-bottom">
+                                <h5 class="mb-0 fw-bold text-dark"><i class="fa fa-id-card-o text-info me-2"/>Bus Pass &amp; Driver Contacts</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="rounded-circle bg-primary text-white p-3 me-3">
+                                        <i class="fa fa-user fa-2x"/>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">Bus Driver</div>
+                                        <div class="fw-bold fs-5 text-dark"><t t-esc="bus.driver_name"/></div>
+                                        <a t-if="bus.driver_phone" t-att-href="'tel:' + bus.driver_phone" class="btn btn-sm btn-outline-success mt-1">
+                                            <i class="fa fa-phone me-1"/> <t t-esc="bus.driver_phone"/>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div t-if="bus.conductor_name" class="d-flex align-items-center pt-3 border-top">
+                                    <div class="rounded-circle bg-light text-secondary p-3 me-3 border">
+                                        <i class="fa fa-user-circle fa-2x"/>
+                                    </div>
+                                    <div>
+                                        <div class="text-muted small">Conductor / Attendant</div>
+                                        <div class="fw-bold text-dark"><t t-esc="bus.conductor_name"/></div>
+                                        <a t-if="bus.conductor_phone" t-att-href="'tel:' + bus.conductor_phone" class="text-muted small text-decoration-none">
+                                            <i class="fa fa-phone me-1"/> <t t-esc="bus.conductor_phone"/>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 pt-3 border-top small text-muted">
+                                    <strong>Bus Pass No:</strong> <t t-esc="registration.card_number or 'ACTIVE-PASS'"/><br/>
+                                    <strong>Pass Status:</strong> <span class="badge bg-success ms-1">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Case B: All School Buses Directory -->
+                <div t-if="not registration or not bus" class="alert alert-info border mb-4">
+                    <i class="fa fa-info-circle me-2"/><strong>Note:</strong> You do not have an active personal bus pass assigned yet. Below are all active school bus routes and schedules.
+                </div>
+
+                <div class="card border shadow-sm mt-3" t-if="not (registration and bus)">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h5 class="mb-0 fw-bold">Active School Buses &amp; Live Status</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Bus Identifier</th>
+                                    <th>Reg No.</th>
+                                    <th>Route</th>
+                                    <th>Driver</th>
+                                    <th>Live Location</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="all_buses" t-as="b">
+                                    <td class="fw-bold"><t t-esc="b.name"/></td>
+                                    <td><span class="badge bg-light text-dark border"><t t-esc="b.vehicle_number"/></span></td>
+                                    <td><t t-esc="b.route_id.name or 'Main Campus'"/></td>
+                                    <td>
+                                        <t t-esc="b.driver_name"/><br/>
+                                        <a t-if="b.driver_phone" t-att-href="'tel:' + b.driver_phone" class="small text-muted"><t t-esc="b.driver_phone"/></a>
+                                    </td>
+                                    <td><i class="fa fa-map-marker text-danger me-1"/><t t-esc="b.current_location or 'Campus'"/></td>
+                                    <td>
+                                        <span t-if="b.status == 'on_route'" class="badge bg-success">On Route</span>
+                                        <span t-elif="b.status == 'idle'" class="badge bg-secondary">At Campus</span>
+                                        <span t-else="" class="badge bg-danger">Maintenance</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
