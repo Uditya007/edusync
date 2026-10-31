@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <menuitem name="Time Table"
+    <menuitem name="Class Time Table"
         id="menu_op_timetable_root"
         groups="openeducat_timetable.group_op_timetable_user,openeducat_timetable.group_op_timetable_manager"
         web_icon="openeducat_timetable,static/description/icon.png"
         action="act_open_op_session_view"
-        sequence="280">
+        sequence="4">
         <menuitem name="Timetable"
             id="menu_op_timetable"
             groups="openeducat_timetable.group_op_timetable_manager,openeducat_timetable.group_op_timetable_user"

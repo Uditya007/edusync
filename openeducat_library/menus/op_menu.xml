@@ -2,8 +2,8 @@
 <odoo>
 
         <menuitem id="menu_op_library_root"
-                  name="Library"
-                  sequence="390"
+                  name="School Library"
+                  sequence="10"
                   web_icon="openeducat_library,static/description/icon.png"
                   groups="group_op_library,group_op_library_user"/>
 

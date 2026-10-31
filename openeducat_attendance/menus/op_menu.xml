@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
         <menuitem id="menu_op_attendance_root"
-                  name=" Class Attendances"
-                  sequence="290"
+                  name="Daily Attendance"
+                  sequence="2"
                   web_icon="openeducat_attendance,static/description/icon.png"
                   groups="openeducat_attendance.group_op_attendance_user,openeducat_attendance.group_op_attendance_manager"/>
 

@@ -248,8 +248,8 @@
     <!-- 5. MENUS -->
     <!-- Top-level root menu -->
     <menuitem id="menu_op_transport_root"
-              name="Bus Tracking"
-              sequence="45"
+              name="School Bus Tracking"
+              sequence="6"
               web_icon="openeducat_core,static/description/transportation-icon.svg"/>
 
     <!-- Submenus -->

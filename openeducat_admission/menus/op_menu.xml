@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-        <menuitem id="menu_op_admission_root" name="Admissions"
-                  sequence="270"
+        <menuitem id="menu_op_admission_root" name="New Admissions"
+                  sequence="9"
                   web_icon="openeducat_admission,static/description/icon.png"/>
 
         <menuitem id="menu_op_admission_submenu" name="Admissions"

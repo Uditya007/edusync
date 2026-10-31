@@ -2,8 +2,8 @@
 <odoo>
 
         <menuitem id="menu_op_exam_root"
-                  name="Exams"
-                  sequence="310"
+                  name="Exams &amp; Report Cards"
+                  sequence="5"
                   web_icon="openeducat_exam,static/description/icon.png"/>
 
         <menuitem id="menu_op_school_exam_result"
