@@ -49,7 +49,7 @@
         </record>
 
         <record model="ir.actions.act_window" id="act_open_op_department_view">
-            <field name="name">Departments</field>
+            <field name="name">School Wings</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">op.department</field>
             <field name="path">department</field>

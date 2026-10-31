@@ -86,7 +86,7 @@
 
 
         <record model="ir.actions.act_window" id="act_open_op_batch_view">
-            <field name="name">Batches</field>
+            <field name="name">Sections</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">op.batch</field>
             <field name="path">batches</field>

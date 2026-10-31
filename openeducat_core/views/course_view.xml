@@ -101,7 +101,7 @@
         </record>
 
         <record model="ir.actions.act_window" id="act_open_op_course_view">
-            <field name="name">Courses</field>
+            <field name="name">Classes / Grades</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">op.course</field>
             <field name="path">courses</field>
